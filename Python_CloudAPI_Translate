@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
+def run_quickstart():
+    # [START translate_quickstart]
+    # Imports the Google Cloud client library
+    from google.cloud import translate_v2 as translate
+    #from text_unidecode import unidecode
+    import os,xlrd,xlwt
+    
+    inExcel= (r'''sample_(1).xlsx''')
+    outExcel= ("OSample.csv")
+
+    # Instantiates a client
+    translate_client = translate.Client()
+    if os.path.isfile(outExcel):os.remove(outExcel)#delete file if it exists
+    workbook = xlrd.open_workbook(inExcel)
+    sheetIn = workbook.sheet_by_index(0)
+    workbook = xlwt.Workbook()
+    sheetOut = workbook.add_sheet('DATA')
+    cols=[0]
+    for r in range(sheetIn.nrows):
+        for c in cols:
+
+                        ### The text to translate
+                        #text = u'หน่อไม้ผัดคะน้าน้ำมันหอย'
+                        ### The target language
+                        target = 'en'
+
+                        
+                        translation = translate_client.translate( sheetIn.cell_value(r, c),  target_language=target)
+
+                        print(u'Text: {}'.format(sheetIn.cell_value(r, c)))
+                        print(u'Translation: {}'.format(translation['translatedText']))
+                        
+                        sheetOut.write(r, c,format(translation['translatedText']).replace("&#39;","'"))
+                                                                        
+                        workbook.save(outExcel)#save the result
+                        # [END translate_quickstart]
+
+
+if __name__ == '__main__':
+    run_quickstart()
+
+                                       
